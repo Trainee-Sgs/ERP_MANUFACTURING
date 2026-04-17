@@ -120,17 +120,19 @@ class OrderProduct {
 class JobOrder {
   final String id;
   final String ref;
+  final DateTime deliveryDate;
   final List<OrderProduct> products;
   final List<ProductPlan> planning;
   const JobOrder({
     required this.id,
     required this.ref,
+    required this.deliveryDate,
     required this.products,
     required this.planning,
   });
 }
 
-// ─── Sample spares data keyed by job card id — Solar Industry ─────────────────
+// ─── Sample spares data keyed by job card id ──────────────────────────────────
 final Map<String, List<SpareItem>> _jobSpares = {
   'JC-001': [
     SpareItem(partNo: 'SP-101', name: 'Monocrystalline Cell 6"',  required: 144, inStock: 200, uom: 'Nos'),
@@ -149,13 +151,18 @@ final Map<String, List<SpareItem>> _jobSpares = {
     SpareItem(partNo: 'SP-303', name: 'Solar Charge Controller 10A', required: 10, inStock: 0,  uom: 'Nos'),
     SpareItem(partNo: 'SP-304', name: 'Mounting Pole Bracket',       required: 10, inStock: 15, uom: 'Nos'),
   ],
+  'JC-004': [
+    SpareItem(partNo: 'SP-401', name: 'Steel Rod 20mm',   required: 1000, inStock: 450, uom: 'Nos'),
+    SpareItem(partNo: 'SP-402', name: 'Corner Bracket',   required: 400,  inStock: 400, uom: 'Nos'),
+    SpareItem(partNo: 'SP-403', name: 'Welding Wire 1kg', required: 200,  inStock: 80,  uom: 'Nos'),
+  ],
 };
 
 List<SpareItem> sparesFor(String jobId) =>
     _jobSpares[jobId] ?? _jobSpares['JC-001']!;
 
 // ---------------------------------------------------------------------------
-// Sample Data — Solar Energy Products MRP
+// Sample Data
 // ---------------------------------------------------------------------------
 class SampleData {
   // ── Bill of Materials ──────────────────────────────────────────────────────
@@ -198,41 +205,17 @@ class SampleData {
     ),
   ];
 
-  // ── BOM Materials (BOM-001 — Solar Panel 400W Mono) ───────────────────────
+  // ── BOM Materials ─────────────────────────────────────────────────────────
   static List<BomMaterial> bomMaterials = [
-    BomMaterial(
-      name: 'Monocrystalline Silicon Cell 6"',
-      uom: 'pcs',
-      quantity: 72,
-    ),
-    BomMaterial(
-      name: 'Tempered Solar Glass 3.2mm',
-      uom: 'm²',
-      quantity: 1.96,
-    ),
-    BomMaterial(
-      name: 'EVA Encapsulant Film',
-      uom: 'm²',
-      quantity: 3.92,
-    ),
-    BomMaterial(
-      name: 'TPT Back Sheet',
-      uom: 'm²',
-      quantity: 1.96,
-    ),
-    BomMaterial(
-      name: 'Anodised Aluminium Frame',
-      uom: 'pcs',
-      quantity: 1,
-    ),
-    BomMaterial(
-      name: 'MC4 Junction Box',
-      uom: 'pcs',
-      quantity: 1,
-    ),
+    BomMaterial(name: 'Monocrystalline Silicon Cell 6"', uom: 'pcs',  quantity: 72),
+    BomMaterial(name: 'Tempered Solar Glass 3.2mm',      uom: 'm²',   quantity: 1.96),
+    BomMaterial(name: 'EVA Encapsulant Film',             uom: 'm²',   quantity: 3.92),
+    BomMaterial(name: 'TPT Back Sheet',                   uom: 'm²',   quantity: 1.96),
+    BomMaterial(name: 'Anodised Aluminium Frame',         uom: 'pcs',  quantity: 1),
+    BomMaterial(name: 'MC4 Junction Box',                 uom: 'pcs',  quantity: 1),
   ];
 
-  // ── Production / Build Plans ───────────────────────────────────────────────
+  // ── Production Plans ───────────────────────────────────────────────────────
   static List<ProductionPlan> plans = [
     ProductionPlan(
       id: 'PP-001',
@@ -266,7 +249,7 @@ class SampleData {
     ),
   ];
 
-  // ── Job Cards / Work Orders ────────────────────────────────────────────────
+  // ── Job Cards ──────────────────────────────────────────────────────────────
   static List<JobCard> jobCards = [
     JobCard(
       id: 'JC-001',
@@ -301,6 +284,17 @@ class SampleData {
       startDate: DateTime.now().add(const Duration(days: 2)),
       endDate: DateTime.now().add(const Duration(days: 4)),
     ),
+    JobCard(
+      id: 'JC-004',
+      productName: 'Steel Frame',
+      planRef: 'JO-001',
+      status: 'pending',
+      assignedTo: 'Rajan Industries',
+      machine: 'Fabrication Station F-01',
+      qty: 100,
+      startDate: DateTime.now().add(const Duration(days: 1)),
+      endDate: DateTime.now().add(const Duration(days: 5)),
+    ),
   ];
 
   // ── Job Orders ─────────────────────────────────────────────────────────────
@@ -308,6 +302,7 @@ class SampleData {
     JobOrder(
       id: 'JO-001',
       ref: 'REF-001',
+      deliveryDate: DateTime(2026, 4, 25),
       products: const [
         OrderProduct(name: 'Solar Panel 400W Mono', qty: 1000),
         OrderProduct(name: 'Solar Street Light 60W', qty: 500),
@@ -329,6 +324,7 @@ class SampleData {
     JobOrder(
       id: 'JO-002',
       ref: 'REF-002',
+      deliveryDate: DateTime(2026, 4, 25),
       products: const [
         OrderProduct(name: 'Solar Water Pump 1HP', qty: 750),
         OrderProduct(name: 'Solar Home System 1kW', qty: 200),
@@ -358,7 +354,7 @@ class SampleData {
     ),
   ];
 
-  // ── Component / Material Requests ─────────────────────────────────────────
+  // ── Material Requests ──────────────────────────────────────────────────────
   static List<MaterialRequest> materialRequests = [
     MaterialRequest(
       id: 'MR-001',
@@ -414,9 +410,39 @@ class SampleData {
         ),
       ],
     ),
+    MaterialRequest(
+      id: 'MR-003',
+      jobRef: 'JC-004',
+      requestedBy: 'Rajan Industries',
+      status: 'pending',
+      requestDate: DateTime.now(),
+      itemName: 'Steel Rod 20mm',
+      qty: 1000,
+      uom: 'Nos',
+      items: [
+        MaterialRequestItem(
+          name: 'Steel Rod 20mm',
+          uom: 'Nos',
+          required: 1000,
+          available: 450,
+        ),
+        MaterialRequestItem(
+          name: 'Corner Bracket',
+          uom: 'Nos',
+          required: 400,
+          available: 400,
+        ),
+        MaterialRequestItem(
+          name: 'Welding Wire 1kg',
+          uom: 'Nos',
+          required: 200,
+          available: 80,
+        ),
+      ],
+    ),
   ];
 
-  // ── QC / Testing Records ──────────────────────────────────────────────────
+  // ── QC Records ─────────────────────────────────────────────────────────────
   static List<QcRecord> qcRecords = [
     QcRecord(
       id: 'QC-001',

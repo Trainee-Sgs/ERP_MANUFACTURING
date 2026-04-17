@@ -147,7 +147,7 @@ class AppDropdown extends StatelessWidget {
   final List<String> items;
   final ValueChanged<String?> onChanged;
   const AppDropdown({super.key, required this.label, this.value,
-    required this.items, required this.onChanged});
+    required this.items, required this.onChanged, String? initialValue});
 
   @override
   Widget build(BuildContext context) {

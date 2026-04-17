@@ -504,11 +504,11 @@ class _BomDetailPageState extends State<BomDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            'Quantity',
+                            'Qty',
                             style: TextStyle(
                               fontSize: sw * 0.030,
                               color: Colors.green,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                           SizedBox(height: sw * 0.004),
@@ -516,8 +516,8 @@ class _BomDetailPageState extends State<BomDetailPage> {
                             '${m.quantity}',
                             style: TextStyle(
                               fontSize: sw * 0.030,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.blue,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -950,7 +950,7 @@ class _EditableRowWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Quantity',
+                      'Qty',
                       style: TextStyle(
                         fontSize: sw * 0.028,
                         fontWeight: FontWeight.w500,
@@ -1331,7 +1331,8 @@ class _AddMaterialsBottomSheetState
 // ─────────────────────────────────────────────
 // Shared helpers
 // ─────────────────────────────────────────────
-InputDecoration _inputDecoration(String hint, double sw,
+InputDecoration _inputDecoration(String
+hint, double sw,
     {IconData? prefixIcon}) =>
     InputDecoration(
       hintText: hint,
@@ -1505,7 +1506,7 @@ class _MaterialRowWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Quantity',
+                      'Qty',
                       style: TextStyle(
                         fontSize: sw * 0.028,
                         fontWeight: FontWeight.w500,
