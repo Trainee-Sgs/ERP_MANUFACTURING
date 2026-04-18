@@ -27,11 +27,13 @@ class ProductionPlan {
 
 class JobCard {
   final String id, productName, planRef, status, assignedTo, machine;
+  final String description; // ← NEW
   final int qty;
   final DateTime startDate, endDate;
   JobCard({required this.id, required this.productName, required this.planRef,
     required this.status, required this.assignedTo, required this.machine,
-    required this.qty, required this.startDate, required this.endDate});
+    required this.qty, required this.startDate, required this.endDate,
+    this.description = ''}); // ← NEW (optional with default)
 }
 
 // ─── Spare Item ───────────────────────────────────────────────────────────────
@@ -259,6 +261,7 @@ class SampleData {
       assignedTo: 'Rajan Kumar',
       machine: 'Laminator L-01',
       qty: 500,
+      description: 'Lamination and assembly of 400W monocrystalline solar panels.',
       startDate: DateTime.now().subtract(const Duration(days: 1)),
       endDate: DateTime.now().add(const Duration(days: 2)),
     ),
@@ -270,6 +273,7 @@ class SampleData {
       assignedTo: 'Suresh M',
       machine: 'Framing Press F-02',
       qty: 500,
+      description: 'Framing and encapsulation of solar panel modules.',
       startDate: DateTime.now().add(const Duration(days: 1)),
       endDate: DateTime.now().add(const Duration(days: 3)),
     ),
@@ -281,6 +285,7 @@ class SampleData {
       assignedTo: 'Murugan S',
       machine: 'Assembly Station A-01',
       qty: 500,
+      description: 'Assembly of 60W solar street light units with battery integration.',
       startDate: DateTime.now().add(const Duration(days: 2)),
       endDate: DateTime.now().add(const Duration(days: 4)),
     ),
@@ -292,6 +297,7 @@ class SampleData {
       assignedTo: 'Rajan Industries',
       machine: 'Fabrication Station F-01',
       qty: 100,
+      description: 'Fabrication and welding of steel mounting frames.',
       startDate: DateTime.now().add(const Duration(days: 1)),
       endDate: DateTime.now().add(const Duration(days: 5)),
     ),

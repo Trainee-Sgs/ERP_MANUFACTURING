@@ -105,7 +105,10 @@ PreferredSizeWidget _buildTealAppBar({
                 fontWeight: FontWeight.w700,
                 fontSize: 15)),
         Text(subtitle,
-            style: const TextStyle(color: Colors.white70, fontSize: 11)),
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700)),
       ],
     )
         : Text(title,
@@ -164,6 +167,7 @@ class _SummaryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -386,8 +390,8 @@ class _CustomerNameCard extends StatelessWidget {
             Container(
               width: 42,
               height: 42,
-              decoration:
-              const BoxDecoration(color: _tealLight, shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                  color: _tealLight, shape: BoxShape.circle),
               alignment: Alignment.center,
               child: Text(
                 initials,
@@ -418,6 +422,7 @@ class _CustomerNameCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: Colors.grey.shade600,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 5),
                   Row(
@@ -425,12 +430,15 @@ class _CustomerNameCard extends StatelessWidget {
                       const Icon(Icons.local_shipping_outlined,
                           size: 12, color: _teal),
                       const SizedBox(width: 4),
-                      Text(
-                        'Delivery: ${_fmt(order.deliveryDate)}',
-                        style: const TextStyle(
-                            fontSize: 11,
-                            color: _tealDark,
-                            fontWeight: FontWeight.w600),
+                      Expanded(
+                        child: Text(
+                          'Delivery: ${_fmt(order.deliveryDate)}',
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: _tealDark,
+                              fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -519,18 +527,27 @@ class _ProductListScreenState extends State<_ProductListScreen> {
       ),
       body: Column(
         children: [
+          // ── FIXED: each chip wrapped in Expanded to prevent overflow ──
           Container(
             color: _teal.withOpacity(0.08),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                _SummaryChip(
-                    label: 'Total Products',
-                    value: '${order.products.length}'),
+                Expanded(
+                  child: _SummaryChip(
+                      label: 'Total Products',
+                      value: '${order.products.length}'),
+                ),
                 const SizedBox(width: 8),
-                _SummaryChip(label: 'Completed', value: '$_completedCount'),
+                Expanded(
+                  child: _SummaryChip(
+                      label: 'Completed', value: '$_completedCount'),
+                ),
                 const SizedBox(width: 8),
-                _SummaryChip(label: 'Pending', value: '$_pendingCount'),
+                Expanded(
+                  child: _SummaryChip(
+                      label: 'Pending', value: '$_pendingCount'),
+                ),
               ],
             ),
           ),
@@ -563,8 +580,9 @@ class _ProductListScreenState extends State<_ProductListScreen> {
   void _openPlanning(int prodIdx) async {
     final plan = order.planning[prodIdx];
     final product = order.products[prodIdx];
-    final available =
-    product.qty - plan.planned > 0 ? product.qty - plan.planned : product.qty;
+    final available = product.qty - plan.planned > 0
+        ? product.qty - plan.planned
+        : product.qty;
 
     await Navigator.push(
       context,
@@ -680,10 +698,9 @@ class _ProductCard extends StatelessWidget {
     this.isLast = false,
   });
 
-  String get _displayId =>
-      product.productId.isNotEmpty
-          ? product.productId
-          : 'PRD-${(productIndex + 1).toString().padLeft(4, '0')}';
+  String get _displayId => product.productId.isNotEmpty
+      ? product.productId
+      : 'PRD-${(productIndex + 1).toString().padLeft(4, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -729,6 +746,7 @@ class _ProductCard extends StatelessWidget {
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.black87),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -738,12 +756,15 @@ class _ProductCard extends StatelessWidget {
                       children: [
                         const Icon(Icons.tag, size: 12, color: Colors.grey),
                         const SizedBox(width: 4),
-                        Text(
-                          _displayId,
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey.shade500,
-                              fontWeight: FontWeight.w500),
+                        Expanded(
+                          child: Text(
+                            _displayId,
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade500,
+                                fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -930,8 +951,8 @@ class _CreateJobOrderScreenState extends State<CreateJobOrderScreen> {
                 _FormRow(children: [
                   _Editable(
                     label: 'ORDER ID *',
-                    child: _PPTextField(
-                        controller: _idCtrl, hint: 'e.g. JO-003'),
+                    child:
+                    _PPTextField(controller: _idCtrl, hint: 'e.g. JO-003'),
                   ),
                   _Editable(
                     label: 'STATUS',
@@ -939,8 +960,7 @@ class _CreateJobOrderScreenState extends State<CreateJobOrderScreen> {
                       hint: '-- Select --',
                       value: _status,
                       items: const ['pending', 'active', 'completed'],
-                      onChanged: (v) =>
-                          setState(() => _status = v ?? 'pending'),
+                      onChanged: (v) => setState(() => _status = v ?? 'pending'),
                     ),
                   ),
                 ]),
@@ -969,15 +989,18 @@ class _CreateJobOrderScreenState extends State<CreateJobOrderScreen> {
                             color:
                             _deliveryDate != null ? _teal : Colors.grey),
                         const SizedBox(width: 8),
-                        Text(
-                          _deliveryDate == null
-                              ? 'Select delivery date'
-                              : _fmtDate(_deliveryDate!),
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: _deliveryDate == null
-                                  ? Colors.grey
-                                  : Colors.black87),
+                        Expanded(
+                          child: Text(
+                            _deliveryDate == null
+                                ? 'Select delivery date'
+                                : _fmtDate(_deliveryDate!),
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: _deliveryDate == null
+                                    ? Colors.grey
+                                    : Colors.black87),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ]),
                     ),
@@ -1030,8 +1053,8 @@ class _CreateJobOrderScreenState extends State<CreateJobOrderScreen> {
                               BorderSide(color: Colors.grey.shade300)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(7),
-                              borderSide: const BorderSide(
-                                  color: _teal, width: 1.5)),
+                              borderSide:
+                              const BorderSide(color: _teal, width: 1.5)),
                         ),
                       ),
                     ),
@@ -1085,17 +1108,20 @@ class _CreateJobOrderScreenState extends State<CreateJobOrderScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Text(e.value.name,
                                   style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black87)),
+                                      color: Colors.black87),
+                                  overflow: TextOverflow.ellipsis),
                               Text(e.value.productId,
                                   style: TextStyle(
                                       fontSize: 10,
-                                      color: Colors.grey.shade500)),
+                                      color: Colors.grey.shade500),
+                                  overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ),
@@ -1375,8 +1401,8 @@ class _BomPickerSheetState extends State<_BomPickerSheet> {
                       color: Colors.grey.shade100,
                       shape: BoxShape.circle,
                     ),
-                    child:
-                    const Icon(Icons.close, size: 16, color: Colors.grey),
+                    child: const Icon(Icons.close,
+                        size: 16, color: Colors.grey),
                   ),
                 ),
               ],
@@ -1440,6 +1466,10 @@ class _BomPickerSheetState extends State<_BomPickerSheet> {
   }
 }
 
+// ─────────────────────────────────────────
+// BOM PICKER CARD
+// ─────────────────────────────────────────
+
 class _BomPickerCard extends StatelessWidget {
   final BomData bom;
   final VoidCallback onTap;
@@ -1462,94 +1492,131 @@ class _BomPickerCard extends StatelessWidget {
                 offset: const Offset(0, 1)),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const badgeW = 60.0;
+            const pillW = 52.0;
+            const gaps = 8.0 + 6.0;
+            final titleW = constraints.maxWidth - badgeW - pillW - gaps;
+
+            const dotW = 5.0;
+            const itemGaps = 8.0 + 8.0;
+            const codeW = 72.0;
+            final nameW = constraints.maxWidth - dotW - itemGaps - codeW;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: _tealLight,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'BOM-${bom.bomId.padLeft(3, '0')}',
-                    style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: _tealDark),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    bom.bomLabel.contains('·')
-                        ? bom.bomLabel.split('·').last.trim()
-                        : bom.bomLabel,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87),
-                  ),
-                ),
-                Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '${bom.items.length} items',
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ...bom.items.take(2).map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade400,
-                      shape: BoxShape.circle,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: badgeW,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _tealLight,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'BOM-${bom.bomId.padLeft(3, '0')}',
+                        style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: _tealDark),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: titleW > 0 ? titleW : 0,
+                      child: Text(
+                        bom.bomLabel.contains('·')
+                            ? bom.bomLabel.split('·').last.trim()
+                            : bom.bomLabel,
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black87),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    SizedBox(
+                      width: pillW,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${bom.items.length} items',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ...bom.items.take(2).map((item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: dotW,
+                        height: dotW,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      SizedBox(
+                        width: codeW,
+                        child: Text(
+                          item.itemCode,
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade500,
+                              fontFamily: 'monospace'),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: nameW > 0 ? nameW : 0,
+                        child: Text(
+                          item.itemName,
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black87),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
+                )),
+                if (bom.items.length > 2)
                   Text(
-                    item.itemCode,
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade500,
-                        fontFamily: 'monospace'),
+                    '+${bom.items.length - 2} more items',
+                    style:
+                    TextStyle(fontSize: 10, color: Colors.grey.shade400),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      item.itemName,
-                      style: const TextStyle(
-                          fontSize: 11, color: Colors.black87),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            )),
-            if (bom.items.length > 2)
-              Text(
-                '+${bom.items.length - 2} more items',
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade400),
-              ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -1617,7 +1684,6 @@ class _ProductionPlanningFormScreenState
     _today =
     '${n.day.toString().padLeft(2, '0')}-${n.month.toString().padLeft(2, '0')}-${n.year}';
 
-    // ── AUTO-FILL BOM for mapped products ──
     final autoMap = _autoMapBom(widget.prodIdx, widget.order.products);
     if (autoMap != null) {
       _bomData = autoMap;
@@ -1642,10 +1708,8 @@ class _ProductionPlanningFormScreenState
           _priority.isNotEmpty &&
           _productionType.isNotEmpty;
 
-  // ── BOM picker only for non-auto-filled products ──
-  // Auto-filled products: BOM field is fully read-only, no picker
   Future<void> _openBomPicker() async {
-    if (_isAutoFilled) return; // ✅ Auto-filled BOM — edit blocked
+    if (_isAutoFilled) return;
     final selected = await _showBomPicker(context);
     if (selected != null) {
       setState(() {
@@ -1676,7 +1740,6 @@ class _ProductionPlanningFormScreenState
 
   void _reset() {
     setState(() {
-      // ✅ BOM is never reset — always read-only
       _qty = 0;
       _priority = '';
       _productionType = '';
@@ -1747,22 +1810,15 @@ class _ProductionPlanningFormScreenState
                             label: 'PRODUCT NAME', value: product.name),
                       ]),
                       const SizedBox(height: 10),
-
-                      // ── BOM ID FIELD — FULLY READ-ONLY ──────────────────
                       _Editable(
                         label: 'BOM ID',
                         child: _isAutoFilled
-                            ? _AutoFilledBomField(
-                          // ✅ onClear removed — cannot change BOM
-                          bom: _bomData!,
-                        )
+                            ? _AutoFilledBomField(bom: _bomData!)
                             : _BomPickerField(
                           selected: _bomData,
-                          onTap:
-                          _openBomPicker, // blocked inside if auto-filled
+                          onTap: _openBomPicker,
                         ),
                       ),
-
                       const SizedBox(height: 10),
                       _FormRow(children: [
                         _ReadOnly(
@@ -1804,15 +1860,18 @@ class _ProductionPlanningFormScreenState
                                         ? _teal
                                         : Colors.grey),
                                 const SizedBox(width: 8),
-                                Text(
-                                  _deadline == null
-                                      ? 'Delivery date'
-                                      : _fmtDate(_deadline!),
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: _deadline == null
-                                          ? Colors.grey
-                                          : Colors.black87),
+                                Expanded(
+                                  child: Text(
+                                    _deadline == null
+                                        ? 'Delivery date'
+                                        : _fmtDate(_deadline!),
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: _deadline == null
+                                            ? Colors.grey
+                                            : Colors.black87),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ]),
                             ),
@@ -1893,15 +1952,13 @@ class _ProductionPlanningFormScreenState
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.grey.shade700,
                         side: BorderSide(color: Colors.grey.shade400),
-                        padding:
-                        const EdgeInsets.symmetric(vertical: 13),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
                       child: const Text('Reset',
                           style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600)),
+                              fontSize: 14, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1912,15 +1969,13 @@ class _ProductionPlanningFormScreenState
                       icon: const Icon(Icons.save_outlined, size: 17),
                       label: const Text('Save Plan',
                           style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600)),
+                              fontSize: 14, fontWeight: FontWeight.w600)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                         _canSave ? _teal : Colors.grey.shade300,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding:
-                        const EdgeInsets.symmetric(vertical: 13),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
@@ -1938,13 +1993,10 @@ class _ProductionPlanningFormScreenState
 
 // ─────────────────────────────────────────
 // AUTO-FILLED BOM FIELD
-// ✅ Fully read-only — no edit/clear button
 // ─────────────────────────────────────────
 
 class _AutoFilledBomField extends StatelessWidget {
   final BomData bom;
-
-  // ✅ onClear parameter removed completely
   const _AutoFilledBomField({required this.bom});
 
   @override
@@ -1952,13 +2004,12 @@ class _AutoFilledBomField extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F6F8), // grey = read-only appearance
+        color: const Color(0xFFF4F6F8),
         borderRadius: BorderRadius.circular(7),
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: Row(
         children: [
-
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -1967,9 +2018,9 @@ class _AutoFilledBomField extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          // ✅ Edit icon button completely removed — no way to change BOM
         ],
       ),
     );
@@ -1978,8 +2029,6 @@ class _AutoFilledBomField extends StatelessWidget {
 
 // ─────────────────────────────────────────
 // BOM PICKER FIELD
-// ✅ Read-only appearance when no BOM selected
-//    (for non-auto products, picker still works)
 // ─────────────────────────────────────────
 
 class _BomPickerField extends StatelessWidget {
@@ -2025,6 +2074,7 @@ class _BomPickerField extends StatelessWidget {
                       ? FontWeight.w600
                       : FontWeight.normal,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Icon(
@@ -2061,97 +2111,115 @@ class _ItemTable extends StatelessWidget {
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ─── HEADER ─────────────────────
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF26A69A), // teal bg
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.white),
-            ),
-            child: const Row(
-              children: [
-                SizedBox(width: 32, child: _TH('', isDarkHeader: true)),
-                SizedBox(width: 110, child: _TH('ITEM CODE', isDarkHeader: true)),
-                SizedBox(width: 190, child: _TH('ITEM NAME', isDarkHeader: true)),
-                SizedBox(
-                  width: 72,
-                  child: _TH('Required QTY', center: true, isDarkHeader: true),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final totalWidth = constraints.maxWidth - 20;
+        final idxW = totalWidth * 0.04;
+        final codeW = totalWidth * 0.28;
+        final nameW = totalWidth * 0.48;
+        final qtyW = totalWidth * 0.20;
+
+        Widget headerCell(String text, double width, {bool center = false}) =>
+            SizedBox(
+              width: width,
+              child: Text(
+                text,
+                textAlign: center ? TextAlign.center : TextAlign.left,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
 
-          const SizedBox(height: 4),
-
-          // ─── ROWS ─────────────────────
-          ...bomData!.items.asMap().entries.map((e) {
-            final i = e.key;
-            final item = e.value;
-            final mult = splitQty > 0 ? splitQty : 1;
-            final totalQty = item.qtyPerUnit * mult;
-
-            return Container(
-              margin: const EdgeInsets.only(top: 4),
-              padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 10),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding:
+              const EdgeInsets.symmetric(vertical: 9, horizontal: 10),
               decoration: BoxDecoration(
-                color: i.isEven ? const Color(0xFFF5F5F5) : Colors.white,
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.grey.shade200),
+                color: _teal,
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Row(
                 children: [
-                  const SizedBox(width: 32),
-
-                  SizedBox(
-                    width: 110,
-                    child: Text(
-                      item.itemCode,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: 190,
-                    child: Text(
-                      item.itemName,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: 72,
-                    child: _ColorCell(
-                      value: '$totalQty',
-                      fg: _tealDark,
-                      bg: _tealLight,
-                    ),
-                  ),
+                  headerCell('', idxW),
+                  headerCell('ITEM CODE', codeW),
+                  headerCell('ITEM NAME', nameW),
+                  headerCell('REQ QTY', qtyW, center: true),
                 ],
               ),
-            );
-          }),
+            ),
+            const SizedBox(height: 4),
+            ...bomData!.items.asMap().entries.map((e) {
+              final i = e.key;
+              final item = e.value;
+              final mult = splitQty > 0 ? splitQty : 1;
+              final totalQty = item.qtyPerUnit * mult;
 
-          const SizedBox(height: 6),
-
-          // ─── FOOTER ─────────────────────
-          Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: Align(
+              return Container(
+                margin: const EdgeInsets.only(top: 4),
+                padding:
+                const EdgeInsets.symmetric(vertical: 9, horizontal: 9),
+                decoration: BoxDecoration(
+                  color: i.isEven
+                      ? const Color(0xFFF5F5F5)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: idxW,
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: codeW,
+                      child: Text(
+                        item.itemCode,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: nameW,
+                      child: Text(
+                        item.itemName,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: qtyW,
+                      child: _ColorCell(
+                        value: '$totalQty',
+                        fg: _tealDark,
+                        bg: _tealLight,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: 6),
+            Align(
               alignment: Alignment.centerRight,
               child: Text(
                 'Total Rows: ${bomData!.items.length}',
@@ -2161,9 +2229,9 @@ class _ItemTable extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }
@@ -2200,8 +2268,7 @@ class _Tab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding:
-    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
     decoration: BoxDecoration(
       border: Border(
           bottom: BorderSide(
@@ -2210,8 +2277,7 @@ class _Tab extends StatelessWidget {
     child: Text(label,
         style: TextStyle(
             fontSize: 11,
-            fontWeight:
-            active ? FontWeight.w700 : FontWeight.w400,
+            fontWeight: active ? FontWeight.w700 : FontWeight.w400,
             color: active ? _teal : Colors.grey.shade500)),
   );
 }
@@ -2233,11 +2299,13 @@ class _Banner2 extends StatelessWidget {
           color: Colors.green, size: 16),
       const SizedBox(width: 8),
       Expanded(
-          child: Text(text,
-              style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.green,
-                  fontWeight: FontWeight.w600))),
+        child: Text(text,
+            style: const TextStyle(
+                fontSize: 12,
+                color: Colors.green,
+                fontWeight: FontWeight.w600),
+            overflow: TextOverflow.ellipsis),
+      ),
     ]),
   );
 }
@@ -2292,16 +2360,16 @@ class _ReadOnly extends StatelessWidget {
       const SizedBox(height: 4),
       Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 11, vertical: 11),
+        padding:
+        const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
         decoration: BoxDecoration(
           color: const Color(0xFFF4F6F8),
           borderRadius: BorderRadius.circular(7),
           border: Border.all(color: Colors.grey.shade200),
         ),
         child: Text(value,
-            style: const TextStyle(
-                fontSize: 13, color: Colors.black87)),
+            style: const TextStyle(fontSize: 13, color: Colors.black87),
+            overflow: TextOverflow.ellipsis),
       ),
     ],
   );
@@ -2364,8 +2432,7 @@ class _PPDropdown extends StatelessWidget {
         value: value,
         isExpanded: true,
         hint: Text(hint,
-            style:
-            const TextStyle(fontSize: 13, color: Colors.grey)),
+            style: const TextStyle(fontSize: 13, color: Colors.grey)),
         icon: const Icon(Icons.keyboard_arrow_down,
             color: Colors.grey, size: 18),
         items: items
@@ -2404,12 +2471,11 @@ class _PPQtyField extends StatelessWidget {
     style: const TextStyle(fontSize: 13),
     decoration: InputDecoration(
       hintText: '0',
-      hintStyle:
-      const TextStyle(fontSize: 13, color: Colors.grey),
+      hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
       filled: true,
       fillColor: const Color(0xFFF4F6F8),
-      contentPadding: const EdgeInsets.symmetric(
-          horizontal: 11, vertical: 11),
+      contentPadding:
+      const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
       isDense: true,
       border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(7),
@@ -2419,8 +2485,7 @@ class _PPQtyField extends StatelessWidget {
           borderSide: BorderSide(color: Colors.grey.shade300)),
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(7),
-          borderSide:
-          const BorderSide(color: _teal, width: 1.5)),
+          borderSide: const BorderSide(color: _teal, width: 1.5)),
     ),
     onChanged: (v) {
       int parsed = int.tryParse(v) ?? 0;
@@ -2439,8 +2504,7 @@ class _PPQtyField extends StatelessWidget {
 class _PPTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
-  const _PPTextField(
-      {required this.controller, required this.hint});
+  const _PPTextField({required this.controller, required this.hint});
 
   @override
   Widget build(BuildContext context) => TextField(
@@ -2448,12 +2512,11 @@ class _PPTextField extends StatelessWidget {
     style: const TextStyle(fontSize: 13),
     decoration: InputDecoration(
       hintText: hint,
-      hintStyle:
-      const TextStyle(fontSize: 13, color: Colors.grey),
+      hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
       filled: true,
       fillColor: const Color(0xFFF4F6F8),
-      contentPadding: const EdgeInsets.symmetric(
-          horizontal: 11, vertical: 11),
+      contentPadding:
+      const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
       isDense: true,
       border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(7),
@@ -2463,8 +2526,7 @@ class _PPTextField extends StatelessWidget {
           borderSide: BorderSide(color: Colors.grey.shade300)),
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(7),
-          borderSide:
-          const BorderSide(color: _teal, width: 1.5)),
+          borderSide: const BorderSide(color: _teal, width: 1.5)),
     ),
   );
 }
@@ -2493,17 +2555,14 @@ class _ColorCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     margin: const EdgeInsets.symmetric(horizontal: 4),
-    padding:
-    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
     decoration: BoxDecoration(
         color: bg, borderRadius: BorderRadius.circular(4)),
     alignment: Alignment.center,
     child: Text(value,
         textAlign: TextAlign.center,
         style: TextStyle(
-            fontSize: 12,
-            color: fg,
-            fontWeight: FontWeight.w700)),
+            fontSize: 12, color: fg, fontWeight: FontWeight.w700)),
   );
 }
 
@@ -2518,9 +2577,7 @@ class _Pill extends StatelessWidget {
         color: _tealLight, borderRadius: BorderRadius.circular(20)),
     child: Text(text,
         style: const TextStyle(
-            fontSize: 11,
-            color: _tealDark,
-            fontWeight: FontWeight.w600)),
+            fontSize: 11, color: _tealDark, fontWeight: FontWeight.w600)),
   );
 }
 
@@ -2542,16 +2599,13 @@ class _MiniTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding:
-    const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
     decoration: BoxDecoration(
       color: color.withOpacity(0.1),
       borderRadius: BorderRadius.circular(10),
     ),
     child: Text(label,
         style: TextStyle(
-            fontSize: 10,
-            color: color,
-            fontWeight: FontWeight.w600)),
+            fontSize: 10, color: color, fontWeight: FontWeight.w600)),
   );
 }

@@ -40,16 +40,16 @@ class StatusBadge extends StatelessWidget {
     Color bg, fg;
     switch (status) {
       case 'completed':
-        bg = AppColors.successLight;
-        fg = AppColors.success;
+        bg = const Color(0xFFE0F2F1);
+        fg = _teal;
         break;
       case 'inprogress':
-        bg = AppColors.inProgressLight;
-        fg = AppColors.inProgress;
+        bg = const Color(0xFFE3F2FD);
+        fg = const Color(0xFF1565C0);
         break;
       case 'pending':
-        bg = AppColors.pendingLight;
-        fg = AppColors.pending;
+        bg = const Color(0xFFF5F5F5);
+        fg = const Color(0xFF757575);
         break;
       default:
         bg = AppColors.border;
@@ -74,8 +74,7 @@ class StatusBadge extends StatelessWidget {
 class SummaryStrip extends StatelessWidget {
   final List<SpareItem> spares;
   final double sw;
-  const SummaryStrip(
-      {super.key, required this.spares, required this.sw});
+  const SummaryStrip({super.key, required this.spares, required this.sw});
 
   @override
   Widget build(BuildContext context) {
@@ -83,25 +82,13 @@ class SummaryStrip extends StatelessWidget {
     final available = spares.where((s) => s.isSufficient).length;
     final shortage = total - available;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: _teal.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(sw * 0.03),
-        border: Border.all(color: _teal.withOpacity(0.25)),
-      ),
-      child: Row(children: [
-        _statBox('Total', '$total', _teal, sw),
-        _divider(sw),
-        _statBox('Available', '$available', AppColors.success, sw),
-        _divider(sw),
-        _statBox('Remaining', '$shortage',
-            shortage > 0 ? AppColors.danger : AppColors.success, sw),
-      ]),
+    return Row(
+
     );
   }
 
-  Widget _divider(double sw) => Container(
-      width: 1, height: sw * 0.12, color: _teal.withOpacity(0.2));
+  Widget _divider(double sw) =>
+      Container(width: 1, height: sw * 0.12, color: _teal.withOpacity(0.2));
 
   Widget _statBox(String label, String val, Color color, double sw) =>
       Expanded(
@@ -127,25 +114,23 @@ class SummaryStrip extends StatelessWidget {
 class SpareStockCard extends StatelessWidget {
   final SpareItem spare;
   final double sw;
-  const SpareStockCard(
-      {super.key, required this.spare, required this.sw});
+  const SpareStockCard({super.key, required this.spare, required this.sw});
 
   @override
   Widget build(BuildContext context) {
     final sufficient = spare.isSufficient;
 
     return AppCard(
-      color: sufficient ? AppColors.surface : AppColors.dangerLight,
-      child:
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      color: AppColors.surface,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
             width: sw * 0.09,
             height: sw * 0.09,
             decoration: BoxDecoration(
               color: sufficient
-                  ? AppColors.successLight
-                  : AppColors.dangerLight,
+                  ? const Color(0xFFE8F5E9)
+                  : const Color(0xFFFFEBEE),
               borderRadius: BorderRadius.circular(sw * 0.02),
             ),
             child: Icon(
@@ -177,8 +162,8 @@ class SpareStockCard extends StatelessWidget {
                 horizontal: sw * 0.025, vertical: sw * 0.01),
             decoration: BoxDecoration(
               color: sufficient
-                  ? AppColors.successLight
-                  : AppColors.dangerLight,
+                  ? const Color(0xFFE8F5E9)
+                  : const Color(0xFFFFEBEE),
               borderRadius: BorderRadius.circular(sw * 0.015),
             ),
             child: Text(
@@ -186,8 +171,7 @@ class SpareStockCard extends StatelessWidget {
               style: TextStyle(
                   fontSize: sw * 0.028,
                   fontWeight: FontWeight.w700,
-                  color:
-                  sufficient ? AppColors.success : AppColors.danger),
+                  color: sufficient ? AppColors.success : AppColors.danger),
             ),
           ),
         ]),
@@ -197,52 +181,27 @@ class SpareStockCard extends StatelessWidget {
         Row(children: [
           _statCol('Required', '${spare.required} ${spare.uom}',
               AppColors.textPrimary, sw),
-          Container(
-              width: 1, height: sw * 0.08, color: AppColors.border),
-          _statCol(
-              'Issue',
-              '${spare.inStock} ${spare.uom}',
-              sufficient ? AppColors.success : AppColors.danger,
-              sw),
-          Container(
-              width: 1, height: sw * 0.08, color: AppColors.border),
+          Container(width: 1, height: sw * 0.08, color: AppColors.border),
+          _statCol('Issue', '${spare.inStock} ${spare.uom}',
+              sufficient ? AppColors.success : Colors.black, sw),
+          Container(width: 1, height: sw * 0.08, color: AppColors.border),
           _statCol(
             'Remaining',
             sufficient ? '—' : '${spare.gap} short',
-            sufficient ? AppColors.textHint : AppColors.danger,
+            sufficient ? AppColors.success : AppColors.danger,
             sw,
           ),
         ]),
-        if (spare.required > 0) ...[
-          SizedBox(height: sw * 0.025),
-          ProgressBar(
-            value: (spare.inStock / spare.required).clamp(0.0, 1.0),
-            color: sufficient ? AppColors.success : AppColors.danger,
-          ),
-          SizedBox(height: sw * 0.01),
-          Text(
-            sufficient
-                ? 'Fully available'
-                : '${((spare.inStock / spare.required) * 100).toStringAsFixed(0)}% available — need to procure ${spare.gap} ${spare.uom}',
-            style: TextStyle(
-                fontSize: sw * 0.028,
-                color:
-                sufficient ? AppColors.success : AppColors.danger,
-                fontWeight: FontWeight.w500),
-          ),
-        ],
       ]),
     );
   }
 
-  Widget _statCol(
-      String label, String val, Color valColor, double sw) =>
+  Widget _statCol(String label, String val, Color valColor, double sw) =>
       Expanded(
         child: Column(children: [
           Text(label,
               style: TextStyle(
-                  fontSize: sw * 0.028,
-                  color: AppColors.textSecondary)),
+                  fontSize: sw * 0.028, color: AppColors.textSecondary)),
           SizedBox(height: sw * 0.005),
           Text(val,
               style: TextStyle(
@@ -264,23 +223,17 @@ class MRCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sw = MediaQuery.of(context).size.width;
-    final hasShortage = mr.items.any((i) => i.available < i.required);
-    final spares = sparesFor(mr.jobRef);
 
     return AppCard(
       onTap: onTap,
-      color: hasShortage ? AppColors.dangerLight : AppColors.surface,
+      color: AppColors.surface,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
             width: sw * 0.105,
             height: sw * 0.105,
             decoration: BoxDecoration(
-              color: _isSteelFrame
-                  ? const Color(0xFFE8F5E9)
-                  : mr.status == 'approved'
-                  ? AppColors.successLight
-                  : AppColors.pendingLight,
+              color: const Color(0xFFE0F2F1),
               borderRadius: BorderRadius.circular(sw * 0.025),
             ),
             child: Icon(
@@ -289,11 +242,7 @@ class MRCard extends StatelessWidget {
                   : mr.status == 'approved'
                   ? Icons.check_circle_outline
                   : Icons.pending_outlined,
-              color: _isSteelFrame
-                  ? const Color(0xFF388E3C)
-                  : mr.status == 'approved'
-                  ? AppColors.success
-                  : AppColors.pending,
+              color: _teal,
               size: sw * 0.055,
             ),
           ),
@@ -317,33 +266,17 @@ class MRCard extends StatelessWidget {
                       child: Text('Steel Frame Structure',
                           style: TextStyle(
                               fontSize: sw * 0.027,
-                              color: const Color(0xFF388E3C),
+                              color: _teal,
                               fontWeight: FontWeight.w600)),
                     ),
                 ]),
           ),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            StatusBadge(
-              label: mr.status == 'approved' ? 'Approved' : 'Pending',
-              status:
-              mr.status == 'approved' ? 'completed' : 'pending',
-            ),
-            if (hasShortage) ...[
-              SizedBox(height: sw * 0.01),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: sw * 0.02, vertical: sw * 0.008),
-                decoration: BoxDecoration(
-                  color: AppColors.dangerLight,
-                  borderRadius: BorderRadius.circular(sw * 0.015),
-                ),
-              ),
-            ],
-          ]),
+          StatusBadge(
+            label: mr.status == 'approved' ? 'Approved' : 'Pending',
+            status: mr.status == 'approved' ? 'completed' : 'pending',
+          ),
         ]),
-
-        // ── Component requirement summary ──────────────────────────────────
-        SizedBox(height: sw * 0.05),
+        SizedBox(height: sw * 0.02),
       ]),
     );
   }
@@ -353,8 +286,7 @@ class MRCard extends StatelessWidget {
 class MRResponseCard extends StatelessWidget {
   final MaterialRequest mr;
   final VoidCallback onTap;
-  const MRResponseCard(
-      {super.key, required this.mr, required this.onTap});
+  const MRResponseCard({super.key, required this.mr, required this.onTap});
 
   bool get _isSteelFrame => mr.jobRef == 'JC-004';
 
@@ -366,17 +298,15 @@ class MRResponseCard extends StatelessWidget {
 
     return AppCard(
       onTap: onTap,
-      color: shortage ? AppColors.dangerLight : AppColors.surface,
+      color: AppColors.surface,
       child: Row(children: [
         Container(
           width: sw * 0.105,
           height: sw * 0.105,
           decoration: BoxDecoration(
-            color: _isSteelFrame
-                ? const Color(0xFFE8F5E9)
-                : shortage
-                ? AppColors.dangerLight
-                : AppColors.successLight,
+            color: shortage
+                ? const Color(0xFFFFEBEE)
+                : const Color(0xFFE8F5E9),
             borderRadius: BorderRadius.circular(sw * 0.025),
           ),
           child: Icon(
@@ -385,11 +315,7 @@ class MRResponseCard extends StatelessWidget {
                 : shortage
                 ? Icons.warning_amber_outlined
                 : Icons.check_circle_outline,
-            color: _isSteelFrame
-                ? const Color(0xFF388E3C)
-                : shortage
-                ? AppColors.danger
-                : AppColors.success,
+            color: shortage ? AppColors.danger : AppColors.success,
             size: sw * 0.055,
           ),
         ),
@@ -404,8 +330,7 @@ class MRResponseCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary)),
                 SizedBox(height: sw * 0.005),
-                Text(
-                    '${spares.length} components · By ${mr.requestedBy}',
+                Text('${spares.length} components · By ${mr.requestedBy}',
                     style: TextStyle(
                         fontSize: sw * 0.03,
                         color: AppColors.textSecondary)),
@@ -415,7 +340,7 @@ class MRResponseCard extends StatelessWidget {
                     child: Text('Steel Frame Structure',
                         style: TextStyle(
                             fontSize: sw * 0.027,
-                            color: const Color(0xFF388E3C),
+                            color: _teal,
                             fontWeight: FontWeight.w600)),
                   ),
                 if (shortage) ...[
@@ -466,8 +391,7 @@ class MRDetailPage extends StatelessWidget {
             child: Center(
               child: StatusBadge(
                 label: mr.status == 'approved' ? 'Approved' : 'Pending',
-                status:
-                mr.status == 'approved' ? 'completed' : 'pending',
+                status: mr.status == 'approved' ? 'completed' : 'pending',
               ),
             ),
           ),
@@ -475,219 +399,184 @@ class MRDetailPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(sw * 0.05),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Steel Frame banner ─────────────────────────────────────
-              if (_isSteelFrame)
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (_isSteelFrame)
+            Container(
+              margin: EdgeInsets.only(bottom: sw * 0.04),
+              padding: EdgeInsets.all(sw * 0.04),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0F2F1),
+                borderRadius: BorderRadius.circular(sw * 0.03),
+                border: Border.all(color: _teal.withOpacity(0.3)),
+              ),
+              child: Row(children: [
                 Container(
-                  margin: EdgeInsets.only(bottom: sw * 0.04),
-                  padding: EdgeInsets.all(sw * 0.04),
+                  padding: EdgeInsets.all(sw * 0.025),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    borderRadius: BorderRadius.circular(sw * 0.03),
-                    border: Border.all(
-                        color: const Color(0xFF388E3C).withOpacity(0.3)),
+                    color: _teal.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(sw * 0.02),
+                  ),
+                  child: Icon(Icons.architecture,
+                      color: _teal, size: sw * 0.05),
+                ),
+                SizedBox(width: sw * 0.03),
+                Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Steel Frame Structure',
+                            style: TextStyle(
+                                fontSize: sw * 0.035,
+                                fontWeight: FontWeight.w700,
+                                color: _teal)),
+                        Text('JC-004 · Fabrication Job',
+                            style: TextStyle(
+                                fontSize: sw * 0.028,
+                                color: AppColors.textSecondary)),
+                      ]),
+                ),
+              ]),
+            ),
+          Text(mr.id,
+              style: TextStyle(
+                  fontSize: sw * 0.055,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary)),
+          SizedBox(height: sw * 0.01),
+          Text(mr.jobRef,
+              style: TextStyle(
+                  fontSize: sw * 0.035, color: AppColors.textSecondary)),
+          SizedBox(height: sw * 0.05),
+          AppCard(
+            color: AppColors.background,
+            child: Column(children: [
+              InfoRow(label: 'Requested By', value: mr.requestedBy),
+              InfoRow(label: 'Job Card', value: mr.jobRef),
+              InfoRow(
+                  label: 'Date',
+                  value:
+                  '${mr.requestDate.day}/${mr.requestDate.month}/${mr.requestDate.year}'),
+            ]),
+          ),
+          SizedBox(height: sw * 0.04),
+          Row(children: [SizedBox(width: sw * 0.02),
+
+          ]),
+          SizedBox(height: sw * 0.02),
+          SummaryStrip(spares: spares, sw: sw),
+          SizedBox(height: sw * 0.03),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(sw * 0.025),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2)),
+              ],
+            ),
+            child: Column(children: [
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: sw * 0.04, vertical: sw * 0.025),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                ),
+                child: Row(children: [
+                  Expanded(
+                    flex: 5,
+                    child: Text('COMPONENT',
+                        style: TextStyle(
+                            fontSize: sw * 0.026,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 0.4)),
+                  ),
+                  SizedBox(
+                    width: sw * 0.22,
+                    child: Text('REQUIRED',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: sw * 0.026,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 0.4)),
+                  ),
+                ]),
+              ),
+              ...spares.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final s = entry.value;
+                final isLast = idx == spares.length - 1;
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: sw * 0.04, vertical: sw * 0.03),
+                  decoration: BoxDecoration(
+                    color: idx % 2 == 0
+                        ? Colors.white
+                        : const Color(0xFFFAFAFA),
+                    borderRadius: isLast
+                        ? const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    )
+                        : null,
+                    border: isLast
+                        ? null
+                        : const Border(
+                        bottom: BorderSide(
+                            color: Color(0xFFF0F0F0), width: 0.8)),
                   ),
                   child: Row(children: [
-                    Container(
-                      padding: EdgeInsets.all(sw * 0.025),
-                      decoration: BoxDecoration(
-                        color:
-                        const Color(0xFF388E3C).withOpacity(0.15),
-                        borderRadius:
-                        BorderRadius.circular(sw * 0.02),
-                      ),
-                      child: Icon(Icons.architecture,
-                          color: const Color(0xFF388E3C),
-                          size: sw * 0.05),
-                    ),
-                    SizedBox(width: sw * 0.03),
                     Expanded(
+                      flex: 5,
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Steel Frame Structure',
-                                style: TextStyle(
-                                    fontSize: sw * 0.035,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF388E3C))),
-                            Text('JC-004 · Fabrication Job',
-                                style: TextStyle(
-                                    fontSize: sw * 0.028,
-                                    color: AppColors.textSecondary)),
+                            Row(children: [
+                              Icon(Icons.circle_outlined,
+                                  size: sw * 0.033, color: _teal),
+                              SizedBox(width: sw * 0.01),
+                              Expanded(
+                                child: Text(s.name,
+                                    style: TextStyle(
+                                        fontSize: sw * 0.034,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary)),
+                              ),
+                            ]),
+                            Padding(
+                              padding: EdgeInsets.only(left: sw * 0.043),
+                              child: Text(s.partNo,
+                                  style: TextStyle(
+                                      fontSize: sw * 0.032,
+                                      color: AppColors.textSecondary)),
+                            ),
                           ]),
                     ),
-                  ]),
-                ),
-
-              Text(mr.id,
-                  style: TextStyle(
-                      fontSize: sw * 0.055,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary)),
-              SizedBox(height: sw * 0.01),
-              Text(mr.jobRef,
-                  style: TextStyle(
-                      fontSize: sw * 0.035,
-                      color: AppColors.textSecondary)),
-              SizedBox(height: sw * 0.05),
-
-              AppCard(
-                color: AppColors.background,
-                child: Column(children: [
-                  InfoRow(
-                      label: 'Requested By',
-                      value: mr.requestedBy),
-                  InfoRow(label: 'Job Card', value: mr.jobRef),
-                  InfoRow(
-                      label: 'Date',
-                      value:
-                      '${mr.requestDate.day}/${mr.requestDate.month}/${mr.requestDate.year}'),
-                ]),
-              ),
-
-              SizedBox(height: sw * 0.04),
-
-              // ── Component Requirement Summary ──────────────────────────
-              Row(children: [
-                Icon(Icons.inventory_2_outlined,
-                    color: _teal, size: sw * 0.045),
-                SizedBox(width: sw * 0.02),
-                Text('Components Required (${spares.length} total)',
-                    style: TextStyle(
-                        fontSize: sw * 0.038,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary)),
-              ]),
-              SizedBox(height: sw * 0.02),
-              SummaryStrip(spares: spares, sw: sw),
-              SizedBox(height: sw * 0.03),
-
-              // Inline component requirement table
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(sw * 0.025),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2)),
-                  ],
-                ),
-                child: Column(children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: sw * 0.04, vertical: sw * 0.025),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+                    SizedBox(
+                      width: sw * 0.24,
+                      child: Text(
+                        '${s.required} ${s.uom}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: sw * 0.034,
+                            fontWeight: FontWeight.w800,
+                            color: _teal),
                       ),
                     ),
-                    child: Row(children: [
-                      Expanded(
-                        flex: 5,
-                        child: Text('COMPONENT',
-                            style: TextStyle(
-                                fontSize: sw * 0.026,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textSecondary,
-                                letterSpacing: 0.4)),
-                      ),
-                      SizedBox(
-                        width: sw * 0.22,
-                        child: Text('REQUIRED',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: sw * 0.026,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textSecondary,
-                                letterSpacing: 0.4)),
-                      ),
-                    ]),
-                  ),
-                  ...spares.asMap().entries.map((entry) {
-                    final idx = entry.key;
-                    final s = entry.value;
-                    final ok = s.isSufficient;
-                    final isLast = idx == spares.length - 1;
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: sw * 0.04, vertical: sw * 0.03),
-                      decoration: BoxDecoration(
-                        color: idx % 2 == 0
-                            ? Colors.white
-                            : const Color(0xFFFAFAFA),
-                        borderRadius: isLast
-                            ? const BorderRadius.only(
-                          bottomLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12),
-                        )
-                            : null,
-                        border: isLast
-                            ? null
-                            : const Border(
-                            bottom: BorderSide(
-                                color: Color(0xFFF0F0F0), width: 0.8)),
-                      ),
-                      child: Row(children: [
-                        Expanded(
-                          flex: 5,
-                          child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Icon(
-                                    ok
-                                        ? Icons.check_circle_outline
-                                        : Icons.warning_amber_outlined,
-                                    size: sw * 0.033,
-                                    color: ok
-                                        ? AppColors.success
-                                        : AppColors.danger,
-                                  ),
-                                  SizedBox(width: sw * 0.01),
-                                  Expanded(
-                                    child: Text(s.name,
-                                        style: TextStyle(
-                                            fontSize: sw * 0.034,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary)),
-                                  ),
-                                ]),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: sw * 0.043),
-                                  child: Text(s.partNo,
-                                      style: TextStyle(
-                                          fontSize: sw * 0.032,
-                                          color: AppColors.textSecondary)),
-                                ),
-                              ]),
-                        ),
-                        SizedBox(
-                          width: sw * 0.24,
-                          child: Text(
-                            '${s.required} ${s.uom}',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: sw * 0.034,
-                                fontWeight: FontWeight.w800,
-                                color: _teal),
-                          ),
-                        ),
-
-                      ]),
-                    );
-                  }),
-                ]),
-              ),
-              SizedBox(height: sw * 0.05),
+                  ]),
+                );
+              }),
             ]),
+          ),
+          SizedBox(height: sw * 0.05),
+        ]),
       ),
     );
   }
@@ -708,121 +597,83 @@ class MRResponseDetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: buildTealAppBar(
-        title: _isSteelFrame
-            ? 'Steel Frame – Issue Response'
-            : 'Issue Response',
+        title: _isSteelFrame ? 'Steel Frame – Issue Response' : 'Intent Issue',
         showBack: true,
         context: context,
         actions: [
           Padding(
             padding: EdgeInsets.only(right: sw * 0.03),
             child: Center(
-              child:
-              StatusBadge(label: 'Issued', status: 'completed'),
+              child: StatusBadge(label: 'Issued', status: 'completed'),
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(sw * 0.05),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Steel Frame banner ─────────────────────────────────────
-              if (_isSteelFrame)
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (_isSteelFrame)
+            Container(
+              margin: EdgeInsets.only(bottom: sw * 0.04),
+              padding: EdgeInsets.all(sw * 0.04),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0F2F1),
+                borderRadius: BorderRadius.circular(sw * 0.03),
+                border: Border.all(color: _teal.withOpacity(0.3)),
+              ),
+              child: Row(children: [
                 Container(
-                  margin: EdgeInsets.only(bottom: sw * 0.04),
-                  padding: EdgeInsets.all(sw * 0.04),
+                  padding: EdgeInsets.all(sw * 0.025),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    borderRadius: BorderRadius.circular(sw * 0.03),
-                    border: Border.all(
-                        color: const Color(0xFF388E3C).withOpacity(0.3)),
+                    color: _teal.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(sw * 0.02),
                   ),
-                  child: Row(children: [
-                    Container(
-                      padding: EdgeInsets.all(sw * 0.025),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF388E3C).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(sw * 0.02),
-                      ),
-                      child: Icon(Icons.architecture,
-                          color: const Color(0xFF388E3C),
-                          size: sw * 0.05),
-                    ),
-                    SizedBox(width: sw * 0.03),
-                    Expanded(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Steel Frame Structure',
-                                style: TextStyle(
-                                    fontSize: sw * 0.035,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF388E3C))),
-                            Text(
-                                '${spares.where((s) => !s.isSufficient).length} component(s) need procurement',
-                                style: TextStyle(
-                                    fontSize: sw * 0.028,
-                                    color: AppColors.textSecondary)),
-                          ]),
-                    ),
-                  ]),
-                ),
-
-              Text(mr.id,
-                  style: TextStyle(
-                      fontSize: sw * 0.055,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary)),
-              SizedBox(height: sw * 0.01),
-              Text('${mr.jobRef} · By ${mr.requestedBy}',
-                  style: TextStyle(
-                      fontSize: sw * 0.035,
-                      color: AppColors.textSecondary)),
-              SizedBox(height: sw * 0.04),
-              SummaryStrip(spares: spares, sw: sw),
-              SizedBox(height: sw * 0.05),
-              Text('Component Stock Status',
-                  style: TextStyle(
-                      fontSize: sw * 0.042,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary)),
-              SizedBox(height: sw * 0.03),
-              ...spares.map((s) => Padding(
-                padding: EdgeInsets.only(bottom: sw * 0.03),
-                child: SpareStockCard(spare: s, sw: sw),
-              )),
-              SizedBox(height: sw * 0.03),
-              Row(children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back, size: sw * 0.04),
-                    label: Text('Back',
-                        style: TextStyle(fontSize: sw * 0.035)),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: _teal,
-                      side: const BorderSide(color: _teal),
-                    ),
-                  ),
+                  child: Icon(Icons.architecture,
+                      color: _teal, size: sw * 0.05),
                 ),
                 SizedBox(width: sw * 0.03),
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: _teal,
-                        foregroundColor: Colors.white),
-                    icon: Icon(Icons.check_circle_outline,
-                        size: sw * 0.04),
-                    label: Text('Issue Stock',
-                        style: TextStyle(fontSize: sw * 0.032)),
-                  ),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Steel Frame Structure',
+                            style: TextStyle(
+                                fontSize: sw * 0.035,
+                                fontWeight: FontWeight.w700,
+                                color: _teal)),
+                        Text(
+                            '${spares.where((s) => !s.isSufficient).length} component(s) need procurement',
+                            style: TextStyle(
+                                fontSize: sw * 0.028,
+                                color: AppColors.textSecondary)),
+                      ]),
                 ),
               ]),
-              SizedBox(height: sw * 0.05),
-            ]),
+            ),
+          Text(mr.id,
+              style: TextStyle(
+                  fontSize: sw * 0.055,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary)),
+          SizedBox(height: sw * 0.01),
+          Text('${mr.jobRef} · By ${mr.requestedBy}',
+              style: TextStyle(
+                  fontSize: sw * 0.035, color: AppColors.textSecondary)),
+          SizedBox(height: sw * 0.04),
+          SummaryStrip(spares: spares, sw: sw),
+          SizedBox(height: sw * 0.05),
+          Text('Component Stock Status',
+              style: TextStyle(
+                  fontSize: sw * 0.042,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary)),
+          SizedBox(height: sw * 0.03),
+          ...spares.map((s) => Padding(
+            padding: EdgeInsets.only(bottom: sw * 0.03),
+            child: SpareStockCard(spare: s, sw: sw),
+          )),
+          SizedBox(height: sw * 0.05),
+        ]),
       ),
     );
   }
@@ -843,8 +694,7 @@ class MRCreatePage extends StatelessWidget {
   String? get _initialValue {
     if (preselectedJobId == null) return null;
     try {
-      return _jobItems
-          .firstWhere((e) => e.startsWith(preselectedJobId!));
+      return _jobItems.firstWhere((e) => e.startsWith(preselectedJobId!));
     } catch (_) {
       return null;
     }
@@ -864,21 +714,18 @@ class MRCreatePage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(sw * 0.05),
-        child:
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           if (isSteelFrame)
             Container(
               margin: EdgeInsets.only(bottom: sw * 0.04),
               padding: EdgeInsets.all(sw * 0.04),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: const Color(0xFFE0F2F1),
                 borderRadius: BorderRadius.circular(sw * 0.03),
-                border: Border.all(
-                    color: const Color(0xFF388E3C).withOpacity(0.3)),
+                border: Border.all(color: _teal.withOpacity(0.3)),
               ),
               child: Row(children: [
-                Icon(Icons.architecture,
-                    color: const Color(0xFF388E3C), size: sw * 0.05),
+                Icon(Icons.architecture, color: _teal, size: sw * 0.05),
                 SizedBox(width: sw * 0.025),
                 Expanded(
                   child: Column(
@@ -888,7 +735,7 @@ class MRCreatePage extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: sw * 0.033,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF388E3C))),
+                                color: _teal)),
                         Text(
                             'Materials will be auto-fetched for steel fabrication',
                             style: TextStyle(
@@ -898,7 +745,6 @@ class MRCreatePage extends StatelessWidget {
                 ),
               ]),
             ),
-
           AppDropdown(
             label: 'Job Card',
             items: _jobItems,
@@ -936,25 +782,21 @@ class MRCreatePage extends StatelessWidget {
 
 // ─── Material Request Screen ──────────────────────────────────────────────────
 class MaterialRequestScreen extends StatefulWidget {
-  const MaterialRequestScreen({super.key});
+  final bool showBack;                                          // ← added
+  const MaterialRequestScreen({super.key, this.showBack = false}); // ← added
 
   @override
-  State<MaterialRequestScreen> createState() =>
-      _MaterialRequestScreenState();
+  State<MaterialRequestScreen> createState() => _MaterialRequestScreenState();
 }
 
 class _MaterialRequestScreenState extends State<MaterialRequestScreen> {
   int _tab = 0;
 
   List<MaterialRequest> get _intentRequests =>
-      SampleData.materialRequests
-          .where((r) => r.status == 'pending')
-          .toList();
+      SampleData.materialRequests.where((r) => r.status == 'pending').toList();
 
   List<MaterialRequest> get _issued =>
-      SampleData.materialRequests
-          .where((r) => r.status == 'approved')
-          .toList();
+      SampleData.materialRequests.where((r) => r.status == 'approved').toList();
 
   @override
   Widget build(BuildContext context) {
@@ -962,11 +804,16 @@ class _MaterialRequestScreenState extends State<MaterialRequestScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: buildTealAppBar(                    // ← added
+        title: 'Material Request',
+        showBack: widget.showBack,                // ← added
+        context: context,
+      ),
       body: Column(children: [
         Container(
           color: _teal,
-          padding:
-          EdgeInsets.fromLTRB(sw * 0.04, 0, sw * 0.04, sw * 0.03),
+          padding: EdgeInsets.fromLTRB(
+              sw * 0.04, sw * 0.02, sw * 0.04, sw * 0.025),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.15),
@@ -991,8 +838,7 @@ class _MaterialRequestScreenState extends State<MaterialRequestScreen> {
             child: ElevatedButton.icon(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const MRCreatePage()),
+                MaterialPageRoute(builder: (_) => const MRCreatePage()),
               ),
               style: ElevatedButton.styleFrom(
                   backgroundColor: _teal, foregroundColor: Colors.white),
@@ -1073,8 +919,7 @@ class _MaterialRequestScreenState extends State<MaterialRequestScreen> {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) =>
-                  MRResponseDetailPage(mr: _issued[i])),
+              builder: (_) => MRResponseDetailPage(mr: _issued[i])),
         ),
       ),
     );

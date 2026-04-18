@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'production.dart';
 import 'shared_widgets.dart';
 import 'app_theme.dart';
 import 'dashboard.dart' hide AppColors;
@@ -21,66 +22,6 @@ class ManufacturingErpApp extends StatelessWidget {
     debugShowCheckedModeBanner: false,
     home: const MainShell(),
   );
-}
-
-// ─── Placeholder screens ───────────────────────────────────────────────────────
-
-class ProductionPlanningScreen extends StatelessWidget {
-  const ProductionPlanningScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final sw = MediaQuery.of(context).size.width;
-    final orders = SampleData.jobOrders;
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: ListView.separated(
-        padding: EdgeInsets.all(sw * 0.05),
-        itemCount: orders.length,
-        separatorBuilder: (_, __) => SizedBox(height: sw * 0.03),
-        itemBuilder: (_, i) {
-          final order = orders[i];
-          return AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(order.id,
-                    style: TextStyle(
-                        fontSize: sw * 0.04,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary)),
-                SizedBox(height: sw * 0.01),
-                Text('Ref: ${order.ref}',
-                    style: TextStyle(
-                        fontSize: sw * 0.032,
-                        color: AppColors.textSecondary)),
-                SizedBox(height: sw * 0.02),
-                ...order.products.map((p) => Padding(
-                  padding: EdgeInsets.only(bottom: sw * 0.01),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(p.name,
-                            style: TextStyle(
-                                fontSize: sw * 0.032,
-                                color: AppColors.textPrimary)),
-                      ),
-                      Text('${p.qty} units',
-                          style: TextStyle(
-                              fontSize: sw * 0.032,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary)),
-                    ],
-                  ),
-                )),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 }
 
 class QcScreen extends StatelessWidget {
@@ -213,13 +154,6 @@ class _MainShellState extends State<MainShell> {
       showInBottomNav: true,
     ),
     _NavItem(
-      label: 'Production Plan',
-      icon: Icons.event_note_outlined,
-      activeIcon: Icons.event_note,
-      screen: const ProductionPlanningScreen(),   // ← no args needed now
-      showInBottomNav: false,
-    ),
-    _NavItem(
       label: 'Job Card',
       icon: Icons.assignment_outlined,
       activeIcon: Icons.assignment,
@@ -234,10 +168,10 @@ class _MainShellState extends State<MainShell> {
       showInBottomNav: false,
     ),
     _NavItem(
-      label: 'Products',
+      label: 'Productions',
       icon: Icons.output_outlined,
       activeIcon: Icons.output,
-      screen: const MaterialRequestScreen(),
+      screen: const ProductionEntryScreen(),
       showInBottomNav: false,
     ),
     _NavItem(
